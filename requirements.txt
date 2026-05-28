@@ -1,0 +1,10 @@
+streamlit
+numpy
+opencv-python-headless
+Pillow
+torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
+sqlalchemy
+pyjwt
+bcrypt
+python-dotenv

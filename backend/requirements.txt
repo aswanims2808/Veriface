@@ -1,0 +1,11 @@
+flask
+flask-cors
+numpy
+opencv-python-headless
+Pillow
+tensorflow
+sqlalchemy
+pyjwt
+bcrypt
+python-dotenv
+gunicorn

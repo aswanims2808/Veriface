@@ -1,0 +1,1 @@
+Failed to generate share link: module 'jwt' has no attribute 'encode' | JWT File: None, Version: unknown, Dir: ['__doc__', '__file__', '__loader__', '__name__', '__package__', '__path__', '__spec__']

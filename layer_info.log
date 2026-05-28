@@ -1,0 +1,16 @@
+Model Input Shape: (None, 224, 224, 3)
+
+First 10 Layers:
+0: input_layer (InputLayer)
+1: Conv1 (Conv2D)
+2: bn_Conv1 (BatchNormalization)
+3: Conv1_relu (ReLU)
+4: expanded_conv_depthwise (DepthwiseConv2D)
+5: expanded_conv_depthwise_BN (BatchNormalization)
+6: expanded_conv_depthwise_relu (ReLU)
+7: expanded_conv_project (Conv2D)
+8: expanded_conv_project_BN (BatchNormalization)
+9: block_1_expand (Conv2D)
+
+Last Layer Config:
+{'name': 'dense_1', 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'float32'}, 'registered_name': None}, 'units': 3, 'activation': 'softmax', 'use_bias': True, 'kernel_initializer': {'module': 'keras.initializers', 'class_name': 'GlorotUniform', 'config': {'seed': None}, 'registered_name': None}, 'bias_initializer': {'module': 'keras.initializers', 'class_name': 'Zeros', 'config': {}, 'registered_name': None}, 'kernel_regularizer': None, 'bias_regularizer': None, 'kernel_constraint': None, 'bias_constraint': None, 'quantization_config': None}
