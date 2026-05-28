@@ -22,7 +22,7 @@ def create_app():
     app = Flask(__name__)
     
     # Configuration from environment variables
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'https://veriface-41cr.vercel.app/').split(',')
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'https://veriface-41cr.vercel.app').split(',')
     UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads'))
 
     # CORS configuration - allow credentials for JWT
