@@ -592,11 +592,11 @@ Body: file=<image_file>
         frequency analysis module & performance tuning
       </sub>
       <br/><br/>
-      <a href="https://github.com/sreeram">
+      <a href="https://github.com/sreeram0343">
         <img src="https://img.shields.io/badge/GitHub-100000?style=flat-square&logo=github&logoColor=white"/>
       </a>
       &nbsp;
-      <a href="https://linkedin.com/in/sreeram">
+      <a href="https://linkedin.com/in/sreeram4">
         <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white"/>
       </a>
       <br/><br/>
