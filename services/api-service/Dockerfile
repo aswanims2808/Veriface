@@ -15,4 +15,4 @@ EXPOSE 5000
 # Set Python path to /app so we can import from app
 ENV PYTHONPATH=/app
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "8", "--timeout", "0", "--chdir", "app", "app:create_app()"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]

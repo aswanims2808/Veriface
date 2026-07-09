@@ -187,9 +187,50 @@ def decode_share_token(token: str) -> dict:
     except Exception as e:
         raise ValueError(f"{str(e)}")
 
-def get_current_user():
-    """Get current user info from request context"""
-    return {
-        'user_id': getattr(request, 'user_id', None),
-        'username': getattr(request, 'username', None)
-    }
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+
+security = HTTPBearer(auto_error=False)
+
+def get_current_user_dep(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    # Fallback to Demo User if no token provided
+    if not credentials:
+        from app.models.user import User
+        demo_user = db.query(User).filter(User.username == 'Demo User').first()
+        if not demo_user:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Demo User not initialized"
+            )
+        return demo_user
+        
+    token = credentials.credentials
+    try:
+        payload = decode_token(token)
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise ValueError("Token is missing user_id claim")
+    except Exception as e:
+        logger.warning(f"Token verification failed: {e}, falling back to Demo User")
+        from app.models.user import User
+        demo_user = db.query(User).filter(User.username == 'Demo User').first()
+        if not demo_user:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Demo User not initialized"
+            )
+        return demo_user
+        
+    from app.models.user import User
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        # Fallback to Demo User if the user in token no longer exists
+        demo_user = db.query(User).filter(User.username == 'Demo User').first()
+        return demo_user
+    return user
+

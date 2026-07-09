@@ -1,5 +1,5 @@
 import logging
-from app.core.database import SessionLocal
+from sqlalchemy.orm import Session
 from app.models.history import AnalysisHistory
 from app.auth.auth_handler import generate_share_token, decode_share_token
 
@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 class HistoryService:
     @staticmethod
-    def get_history(user_id, page=1, per_page=10):
-        db = SessionLocal()
+    def get_history(db: Session, user_id: int, page: int = 1, per_page: int = 10) -> dict:
         try:
             query = db.query(AnalysisHistory).filter(
                 AnalysisHistory.user_id == user_id
@@ -18,7 +17,7 @@ class HistoryService:
             analyses = query.offset((page - 1) * per_page).limit(per_page).all()
             
             return {
-                'analyses': [a.to_dict() for a in analyses],
+                'analyses': analyses,
                 'total': total,
                 'page': page,
                 'per_page': per_page,
@@ -26,14 +25,11 @@ class HistoryService:
                 'status_code': 200
             }
         except Exception as e:
-            logger.error(f"History query error: {e}")
+            logger.error(f"History query database error: {e}")
             return {'error': 'Failed to fetch history', 'status_code': 500}
-        finally:
-            db.close()
 
     @staticmethod
-    def get_analysis(user_id, analysis_id):
-        db = SessionLocal()
+    def get_analysis(db: Session, user_id: int, analysis_id: int) -> dict:
         try:
             analysis = db.query(AnalysisHistory).filter(
                 AnalysisHistory.id == analysis_id,
@@ -42,16 +38,13 @@ class HistoryService:
             
             if not analysis:
                 return {'error': 'Analysis not found', 'status_code': 404}
-            return analysis.to_dict()
+            return {'analysis': analysis, 'status_code': 200}
         except Exception as e:
-            logger.error(f"Analysis fetch error: {e}")
+            logger.error(f"Analysis fetch database error: {e}")
             return {'error': 'Failed to fetch analysis', 'status_code': 500}
-        finally:
-            db.close()
 
     @staticmethod
-    def delete_analysis(user_id, analysis_id):
-        db = SessionLocal()
+    def delete_analysis(db: Session, user_id: int, analysis_id: int) -> dict:
         try:
             analysis = db.query(AnalysisHistory).filter(
                 AnalysisHistory.id == analysis_id,
@@ -65,14 +58,12 @@ class HistoryService:
             db.commit()
             return {'message': 'Analysis deleted successfully', 'status_code': 200}
         except Exception as e:
-            logger.error(f"Analysis deletion error: {e}")
+            db.rollback()
+            logger.error(f"Analysis deletion database error: {e}")
             return {'error': 'Failed to delete analysis', 'status_code': 500}
-        finally:
-            db.close()
 
     @staticmethod
-    def share_analysis(user_id, analysis_id, host_url):
-        db = SessionLocal()
+    def share_analysis(db: Session, user_id: int, analysis_id: int, host_url: str) -> dict:
         try:
             # Verify ownership
             analysis = db.query(AnalysisHistory).filter(
@@ -91,20 +82,17 @@ class HistoryService:
                 'status_code': 200
             }
         except Exception as e:
-            logger.error(f"Share link generation error: {e}")
+            logger.error(f"Share link generation database error: {e}")
             return {'error': f'Failed to generate share link: {str(e)}', 'status_code': 500}
-        finally:
-            db.close()
 
     @staticmethod
-    def get_shared_analysis(token):
+    def get_shared_analysis(db: Session, token: str) -> dict:
         try:
             payload = decode_share_token(token)
             analysis_id = payload['analysis_id']
         except ValueError as e:
             return {'error': str(e), 'status_code': 400}
         
-        db = SessionLocal()
         try:
             analysis = db.query(AnalysisHistory).filter(
                 AnalysisHistory.id == analysis_id
@@ -112,11 +100,7 @@ class HistoryService:
             
             if not analysis:
                 return {'error': 'Analysis not found', 'status_code': 404}
-            
-            # Return limited data for privacy if needed, but currently matching old endpoint behavior:
-            return analysis.to_dict()
+            return {'analysis': analysis, 'status_code': 200}
         except Exception as e:
-            logger.error(f"Shared analysis retrieval error: {e}")
+            logger.error(f"Shared analysis retrieval database error: {e}")
             return {'error': 'Failed to retrieve shared analysis', 'status_code': 500}
-        finally:
-            db.close()

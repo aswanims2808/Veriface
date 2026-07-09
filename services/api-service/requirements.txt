@@ -1,7 +1,11 @@
-flask
-flask-cors
+fastapi
+uvicorn[standard]
+pydantic
+email-validator
+python-multipart
 sqlalchemy
 bcrypt
 python-dotenv
 requests
-gunicorn
+httpx
+pytest
