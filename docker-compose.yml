@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  backend:
-    build: ./backend
+  api-service:
+    build: ./services/api-service
     ports:
       - "5000:5000"
     environment:
@@ -10,9 +10,21 @@ services:
       - DATABASE_URL=sqlite:///./veriface.db
       - CORS_ORIGINS=http://localhost:80,http://localhost:5173
       - UPLOAD_FOLDER=./uploads
+      - INFERENCE_SERVICE_URL=http://inference-service:5001
     volumes:
-      - ./backend/uploads:/app/uploads
-      - ./backend/veriface.db:/app/veriface.db
+      - ./services/api-service/uploads:/app/uploads
+      - ./services/api-service/veriface.db:/app/veriface.db
+    depends_on:
+      - inference-service
+
+  inference-service:
+    build: ./services/inference-service
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+    volumes:
+      - ./services/inference-service/model:/app/model
 
   frontend:
     build: ./frontend
@@ -21,4 +33,4 @@ services:
     environment:
       - VITE_API_URL=http://localhost:5000
     depends_on:
-      - backend
+      - api-service
